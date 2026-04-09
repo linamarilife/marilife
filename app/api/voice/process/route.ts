@@ -127,26 +127,19 @@ export async function POST(request: NextRequest) {
   
   // Si no es una despedida, permitir que el usuario continúe la conversación
   if (!linaResponse.text.includes('Gracias a ti') && !linaResponse.text.includes('excelente día')) {
-    // Pausa más larga y clara para indicar que Lina terminó de hablar
-    twiml.pause({ length: 3 });
-    
-    // Gather para capturar más speech - sin prompt verbal (evitar voz duplicada)
+    // Gather inmediatamente después del audio - sin pausa
     const gather = twiml.gather({
       input: ['speech'],
       language: 'es-ES',
-      speechTimeout: '3', // Segundos de silencio antes de considerar que terminó de hablar
+      speechTimeout: '5', // Segundos de silencio antes de considerar que terminó de hablar
       action: `${origin}/api/voice/process`,
       method: 'POST',
       hints: 'seguros, taxes, medicare, obamacare, citas, precios, ayuda',
+      bargeIn: true, // Permite que el usuario interrumpa el audio (si todavía se reproduce)
     });
     
-    // Si no hay respuesta en 5 segundos, repetir
-    twiml.pause({ length: 5 });
-    twiml.say(
-      { voice: 'woman', language: 'es-ES' },
-      'No te escuché. Si necesitas ayuda con seguros médicos o taxes, por favor habla ahora.'
-    );
-    twiml.pause({ length: 3 });
+    // Si no hay respuesta en 8 segundos, colgar silenciosamente
+    twiml.pause({ length: 8 });
     twiml.hangup();
   }
 
