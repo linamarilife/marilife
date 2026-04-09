@@ -4,6 +4,7 @@ import { generateLinaResponse, extractLeadInfo } from '@/lib/lina';
 import { prisma } from '@/lib/db';
 import { callSessionManager } from '@/lib/callSession';
 import { sendLeadNotificationEmail } from '@/lib/email';
+import { conversationLogger } from '@/lib/conversationLogger';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,6 +67,10 @@ export async function POST(request: NextRequest) {
   const linaResponse = generateLinaResponse(speechResult);
   console.log('Lina response:', linaResponse);
   
+  // Variable para trackear si se capturó lead
+  let leadCaptured = false;
+  let leadData: any = null;
+  
   // Determinar URL base para el audio TTS
   const host = request.headers.get('host') || 'pseudoprostyle-nonepisodical-zaid.ngrok-free.dev';
   const origin = `https://${host}`;
@@ -102,6 +107,10 @@ export async function POST(request: NextRequest) {
             notes: `Lead desde llamada: ${speechResult?.substring(0, 200) || 'sin texto'}`, 
           },
         });
+        
+        // Marcar lead como capturado
+        leadCaptured = true;
+        leadData = lead;
         
         // Enviar email a Mariela
         await sendLeadNotificationEmail(lead).catch(err => 
@@ -146,6 +155,35 @@ export async function POST(request: NextRequest) {
     twiml.pause({ length: 8 });
     twiml.hangup();
   }
+
+  // Registrar conversación asíncronamente (no bloquea la respuesta)
+  (async () => {
+    try {
+      const session = callSid ? callSessionManager.getSession(callSid) : null;
+      
+      await conversationLogger.logConversation({
+        timestamp: new Date().toISOString(),
+        callSid: callSid || 'unknown',
+        phone: phone || 'unknown',
+        speech: speechResult || '',
+        linaResponse: {
+          text: linaResponse.text,
+          intent: linaResponse.intent,
+          needsHuman: linaResponse.needsHuman,
+          appointmentPrompt: linaResponse.appointmentPrompt || false,
+        },
+        sessionData: {
+          name: session?.name,
+          email: session?.email,
+          captured: leadCaptured,
+        },
+      });
+      
+      console.log('Conversación registrada para análisis');
+    } catch (error) {
+      console.error('Error registrando conversación:', error);
+    }
+  })();
 
   return new NextResponse(twiml.toString(), {
     headers: { 'Content-Type': 'text/xml' },
