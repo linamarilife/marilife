@@ -16,6 +16,7 @@ export interface LinaResponse {
  * Analiza el texto del usuario y genera una respuesta apropiada.
  */
 export function generateLinaResponse(userText: string): LinaResponse {
+  console.log('Lina input:', userText);
   const text = userText.toLowerCase().trim();
   
   // Saludos y contacto inicial
@@ -27,7 +28,7 @@ export function generateLinaResponse(userText: string): LinaResponse {
     text.includes('qué eres')
   ) {
     return {
-      text: '¡Hola! Soy Lina, tu asistente de seguros médicos y taxes en la Florida. ¿En qué te puedo ayudar hoy?',
+      text: '¡Hola! Soy Lina, asistente de MARILIFE Agencia de Seguros de Salud y Vida y taxes en la Florida. ¿En qué te puedo ayudar?',
       intent: 'greeting',
       needsHuman: false,
     };
@@ -78,9 +79,41 @@ export function generateLinaResponse(userText: string): LinaResponse {
       };
     }
     
+    // Respuestas específicas por tipo de seguro
+    
+    // Obamacare / ACA específico
+    if (text.includes('obamacare') || text.includes('aca')) {
+      return {
+        text: 'Obamacare está disponible para el año 2026 si aplicas para un periodo especial de inscripción. Si no estás en un periodo especial, existen otras opciones de planes privados. ¿Te gustaría revisar tu elegibilidad o prefieres información sobre planes privados?',
+        intent: 'insurance',
+        needsHuman: false,
+        appointmentPrompt: false,
+      };
+    }
+    
+    // Medicare
+    if (text.includes('medicare')) {
+      return {
+        text: 'Te ayudo con Medicare: Partes A (hospital), B (médico), C (Medicare Advantage) y D (medicamentos). ¿Estás cerca de los 65 años o ya tienes Medicare y quieres revisar tus beneficios?',
+        intent: 'insurance',
+        needsHuman: false,
+        appointmentPrompt: true,
+      };
+    }
+    
+    // Medicaid
+    if (text.includes('medicaid')) {
+      return {
+        text: 'Medicaid en Florida no está expandido (a abril 2026). La elegibilidad está limitada a niños, embarazadas, ancianos y personas con discapacidades que cumplen requisitos estrictos de ingresos. ¿Te gustaría revisar tu elegibilidad con nuestro especialista?',
+        intent: 'insurance',
+        needsHuman: true,
+        appointmentPrompt: true,
+      };
+    }
+    
     // Respuesta general sobre seguros
     return {
-      text: 'Te ayudo con seguros médicos en la Florida: planes ACA (Obamacare), Medicare, Medicaid, y seguros privados. El Open Enrollment para 2026 es del 1 de noviembre 2026 al 15 de enero 2027. ¿Quieres información sobre algún tipo específico de seguro o prefieres agendar una cita para una cotización personalizada?',
+      text: 'Te ayudo con seguros médicos en la Florida: planes ACA (Obamacare), Medicare, seguros privados y suplementarios. ¿Quieres información sobre algún tipo específico de seguro o prefieres agendar una cita para una cotización personalizada?',
       intent: 'insurance',
       needsHuman: false,
       appointmentPrompt: false, // Solo sugerir cita, no forzar captura
