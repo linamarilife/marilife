@@ -62,7 +62,9 @@ export async function POST(request: NextRequest) {
   }
 
   // Generar respuesta usando Lina
+  console.log('Generating Lina response for:', speechResult);
   const linaResponse = generateLinaResponse(speechResult);
+  console.log('Lina response:', linaResponse);
   
   // Determinar URL base para el audio TTS
   const host = request.headers.get('host') || 'pseudoprostyle-nonepisodical-zaid.ngrok-free.dev';
@@ -75,7 +77,9 @@ export async function POST(request: NextRequest) {
   twiml.play(ttsUrl);
   
   // Si la respuesta sugiere agendar cita o necesita humano
-  if (linaResponse.appointmentPrompt || linaResponse.needsHuman) {
+  const isInfoQuery = speechResult.toLowerCase().includes('información') || speechResult.toLowerCase().includes('informacion') || speechResult.toLowerCase().includes('informar');
+  const shouldCaptureLead = (linaResponse.appointmentPrompt || linaResponse.needsHuman) && !isInfoQuery;
+  if (shouldCaptureLead) {
     // Verificar si ya tenemos sesión con datos suficientes
     const session = callSid ? callSessionManager.getSession(callSid) : null;
     
