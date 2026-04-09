@@ -1,10 +1,10 @@
 # Multi-stage build for production
-FROM node:20-alpine AS deps
+FROM node:20-slim AS deps
 
 WORKDIR /app
 
-# Install system dependencies required for Prisma
-RUN apk add --no-cache openssl ca-certificates
+# Install system dependencies required for Prisma (Debian-based)
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
@@ -13,12 +13,11 @@ COPY prisma ./prisma/
 # Install ALL dependencies for build (including devDependencies)
 RUN npm ci
 
-# Generate Prisma client with proper OpenSSL configuration
-ENV PRISMA_CLI_BINARY_TARGETS=linux-musl-openssl-3.0.x
+# Generate Prisma client
 RUN npx prisma generate
 
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
@@ -29,14 +28,14 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Install system dependencies for production (Prisma engine)
-RUN apk add --no-cache openssl ca-certificates
+# Install system dependencies for production
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
