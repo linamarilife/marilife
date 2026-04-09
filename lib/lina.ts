@@ -83,7 +83,7 @@ export function generateLinaResponse(userText: string): LinaResponse {
       text: 'Te ayudo con seguros médicos en la Florida: planes ACA (Obamacare), Medicare, Medicaid, y seguros privados. El Open Enrollment para 2026 es del 1 de noviembre 2026 al 15 de enero 2027. ¿Quieres información sobre algún tipo específico de seguro o prefieres agendar una cita para una cotización personalizada?',
       intent: 'insurance',
       needsHuman: false,
-      appointmentPrompt: true,
+      appointmentPrompt: false, // Solo sugerir cita, no forzar captura
     };
   }
   
