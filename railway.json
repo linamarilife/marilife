@@ -1,0 +1,51 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "startCommand": "npm start",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  },
+  "variables": {
+    "NODE_ENV": "production",
+    "DATABASE_URL": {
+      "description": "SQLite database file (for development) or PostgreSQL connection string",
+      "value": "file:./dev.db"
+    },
+    "TWILIO_ACCOUNT_SID": {
+      "description": "Twilio Account SID for voice/SMS",
+      "required": true
+    },
+    "TWILIO_AUTH_TOKEN": {
+      "description": "Twilio Auth Token",
+      "required": true
+    },
+    "TWILIO_PHONE_NUMBER": {
+      "description": "Twilio phone number (E.164 format, e.g., +15614139370)",
+      "required": true
+    },
+    "ELEVENLABS_API_KEY": {
+      "description": "ElevenLabs API key for TTS (voice Vanessa)",
+      "required": true
+    },
+    "HEALTHSHERPA_API_KEY": {
+      "description": "HealthSherpa API key for ACA plan quoting (optional)",
+      "required": false
+    },
+    "NEXT_PUBLIC_APP_URL": {
+      "description": "Public URL of the deployed application (e.g., https://yourapp.up.railway.app)",
+      "required": true
+    },
+    "CRON_SECRET": {
+      "description": "Secret token for cron job authentication",
+      "value": "marilife-cron-secret-2026"
+    },
+    "GMAIL_APP_PASSWORD": {
+      "description": "Gmail app password for sending email notifications",
+      "value": "uedvzrhkqbxbbymq"
+    }
+  }
+}

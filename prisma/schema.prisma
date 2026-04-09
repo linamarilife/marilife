@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Lead {
+  id               String   @id @default(uuid())
+  name             String
+  email            String
+  phone            String
+  age              Int
+  income           Int
+  householdSize    Int
+  zipCode          String
+  tobaccoUse       Boolean
+  estimatedPremium Int
+  estimatedSubsidy Int
+  planTier         String
+  createdAt        DateTime @default(now())
+  
+  // Follow-up tracking
+  lastFollowUpSent DateTime?
+  followUpCount    Int       @default(0)
+  optOut           Boolean   @default(false)
+  
+  // Enrollment tracking
+  enrolled         Boolean   @default(false)
+  enrolledAt       DateTime?
+  enrollmentPlan   String?
+  
+  // Notes for agents
+  notes            String?
+}

@@ -1,0 +1,28 @@
+
+> aca-funnel@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 1336ms
+ ○ Compiling /api/lead ...
+ ✓ Compiled /api/lead in 3.2s (964 modules)
+Failed to send Twilio SMS: Error: accountSid must start with AC
+    at Twilio.setAccountSid (webpack-internal:///(rsc)/./node_modules/twilio/lib/base/BaseTwilio.js:83:23)
+    at new Client (webpack-internal:///(rsc)/./node_modules/twilio/lib/base/BaseTwilio.js:45:18)
+    at new Twilio (webpack-internal:///(rsc)/./node_modules/twilio/lib/rest/Twilio.js:33:9)
+    at Module.TwilioSDK (webpack-internal:///(rsc)/./node_modules/twilio/lib/index.js:55:12)
+    at sendTwilioFollowUp (webpack-internal:///(rsc)/./app/api/lead/route.ts:31:38)
+    at async Promise.all (index 0)
+ POST /api/lead 200 in 3497ms
+Lead notification email sent to Mariela
+ ○ Compiling / ...
+ ✓ Compiled / in 1311ms (481 modules)
+ GET / 200 in 1451ms
+ ✓ Compiled in 192ms (250 modules)
+   Reload env: .env
+ ✓ Compiled in 132ms (236 modules)
+[?25h
