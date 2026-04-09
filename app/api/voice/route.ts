@@ -44,9 +44,11 @@ export async function POST(request: NextRequest) {
   const gather = twiml.gather({
     input: ['speech'],
     language: 'es-ES',
-    speechTimeout: 'auto',
+    speechTimeout: '5', // 5 segundos de silencio antes de considerar que terminó
     action: '/api/voice/process', // endpoint that will handle the speech result
     method: 'POST',
+    bargeIn: true, // Permite que el usuario interrumpa el audio
+    hints: 'seguros, taxes, medicare, obamacare, citas, ayuda',
   });
   gather.play(`${origin}/audio/instruccion.mp3`);
   
